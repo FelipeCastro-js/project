@@ -1,42 +1,65 @@
-// Call the dataTables jQuery plugin
-$(document).ready(function() {
-  loadUsers();
-  $('#users').DataTable();
-});
+$(document).ready(async () => {
+const users = await fetchUsers();
+renderUsers(users)
+initDataTable();
+})
 
-async function loadUsers() {
-  const request = await fetch('users', {
-  method: 'GET',
-  headers: {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json'
+async function fetchUsers() {
+  try {
+    const res = await fetch('api/users', {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error('Error cargando usuarios:', err);
+    return [];
   }
-
-  });
-
-  const users = await request.json();
-
-  console.log(users);
-
-  let listHtml = '';
-
-  for (let user of users){
-  let userHtml = `
-                     <tr>
-                       <td>${user.id}</td>
-                       <td>${user.firstName} ${user.lastName}</td>
-                       <td>${user.email}</td>
-                       <td>${user.cellphone}</td>
-                       <td>
-                         <a href="#" class="btn btn-danger btn-circle btn-sm">
-                           <i class="fas fa-trash"></i>
-                         </a>
-                       </td>
-                     </tr>`;
-
-     listHtml += userHtml;
-  }
-
-  document.querySelector('#users tbody').innerHTML = listHtml;
-
 }
+
+function renderUsers(users) {
+  const rows = users
+    .map(u => createRowHtml(u))
+    .join('');
+  document.querySelector('#users tbody').innerHTML = rows;
+}
+
+function initDataTable() {
+  $('#users').DataTable();
+}
+
+function createRowHtml({ id, firstName, lastName, email, cellphone }) {
+let cellUser = cellphone == null ? '-' : cellphone;
+  return `
+    <tr data-id="${id}">
+      <td>${id}</td>
+      <td>${firstName} ${lastName}</td>
+      <td>${email}</td>
+      <td>${cellUser}</td>
+      <td>
+        <button class="btn btn-danger btn-circle btn-sm delete-btn">
+          <i  class="fas fa-trash" onclick=deleteUser(${id})></i>
+        </button>
+      </td>
+    </tr>`;
+}
+
+async function deleteUser(id) {
+  if (!confirm('Are you sure you want to delete this user?')) {
+    return;
+  }
+  try {
+    const res = await fetch(`api/users/${id}`, {
+      method: "DELETE",
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    location.reload();
+  } catch (err) {
+    console.error('Error al eliminar el usuario:', err);
+    alert('No se pudo eliminar el usuario');
+  }
+}
+

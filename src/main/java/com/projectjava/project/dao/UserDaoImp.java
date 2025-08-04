@@ -20,4 +20,15 @@ public class UserDaoImp  implements  UserDao{
          return entityManager.createQuery(query).getResultList();
 
     }
+
+    @Override
+    public void Delete(Long id){
+        User user = entityManager.find(User.class, id);
+        entityManager.remove(user);
+    }
+
+    @Override
+    public void Register(User user){
+        entityManager.merge(user);
+    }
 }

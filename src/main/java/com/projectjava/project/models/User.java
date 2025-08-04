@@ -1,32 +1,31 @@
 package com.projectjava.project.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Data;
 
+
+@Data
 @Entity
 @Table(name = "users")
 public class User {
     @Id
-    @Getter @Setter @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+     @Column(name = "id")
     private Long id;
 
-    @Getter @Setter @Column(name = "firstName")
+     @Column(name = "first_name")
     private String firstName;
 
-    @Getter @Setter @Column(name = "lastName")
+     @Column(name = "last_name")
     private String lastName;
 
-    @Getter @Setter @Column(name = "email")
+     @Column(name = "email")
     private String email;
 
-    @Getter @Setter @Column(name = "password")
+     @Column(name = "password")
     private String password;
 
-    @Getter @Setter @Column(name = "cellphone")
+     @Column(name = "cellphone")
     private String cellphone;
 
 
