@@ -1,6 +1,8 @@
 package com.projectjava.project.dao;
 
 import com.projectjava.project.models.User;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -30,5 +32,23 @@ public class UserDaoImp  implements  UserDao{
     @Override
     public void Register(User user){
         entityManager.merge(user);
+    }
+
+    @Override
+    public boolean validateEmail(User user){
+        String query = "FROM User WHERE email = :email";
+        List<User> list = entityManager.createQuery(query)
+                .setParameter("email", user.getEmail())
+                .getResultList();
+
+        if(list.isEmpty()){
+            return false;
+        }
+
+        String passwordHash = list.get(0).getPassword();
+
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+
+       return argon2.verify(passwordHash, user.getPassword());
     }
 }

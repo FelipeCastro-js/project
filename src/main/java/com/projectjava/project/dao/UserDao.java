@@ -8,4 +8,5 @@ public interface UserDao {
     List<User> getUsers();
     void Delete(Long id);
     void Register(User user);
+    boolean validateEmail(User user);
 }
