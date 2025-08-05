@@ -51,7 +51,9 @@ async function deleteUser(id) {
   try {
     const res = await fetch(`api/users/${id}`, {
       method: "DELETE",
-      headers: { 'Accept': 'application/json' }
+      headers: { 'Accept': 'application/json',
+      'Authorization': localStorage.token,
+      }
     });
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);

@@ -20,6 +20,7 @@ async function registerUsers() {
       },
       body: JSON.stringify({ firstName, lastName, email, password })
     });
+    window.location.href= "login.html";
   } catch (err) {
     console.error('Error registering user:', err);
   }
